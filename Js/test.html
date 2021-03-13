@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script src="./personne.js" type="module"> </script>
+    <script>
+       
+     /*   var som=  somme(2,5)
+        alert(som)
+        alert(somme2(2,5))
+
+        //Argument par Défaut => Surcharge
+        alert(sommeArgsParDefaut())
+        alert(sommeArgsParDefaut(1))
+        alert(sommeArgsParDefaut(1,2))
+        //Argument Pas Argument => Surcharge
+        alert(sommePasArgs())
+        alert(sommePasArgs(1))
+        alert(sommePasArgs(1,2,3))
+*/ 
+
+    /* alert(callbackOperation(2,5,somme))
+     alert(callbackOperation(2,5,produit))  
+     alert(callbackOperation(2,5,(a,b)=>{
+         return a*b
+     }))
+
+     */
+    
+
+      /* asyncFonction(5)
+       alert("Au revoir")
+       */
+       //var tab=[1,2.5,somme,"Bonjour",[2,7.2,true]]
+       ////  showTab(tab)
+       var tab=[1,5,-8,2]
+       //ForEach 
+         /*tab.forEach((elt)=>{
+              alert(elt)
+         })*/
+         //map 
+       /* var tabPlusUn= tab.map((elt)=>{
+             return  elt+1
+         }) 
+         alert(tabPlusUn)
+         */
+
+       /*  tab.map(elt=> elt+1)
+         .filter(elt=> elt>8)
+         .forEach(elt=> alert(elt))
+       */
+        //reduce est un accumulateur
+          /*
+            var val=tab.reduce((som,elt)=>som+=elt,0)
+            alert(val)
+           */
+        //sort 
+       /* tab.sort((a,b)=>{
+            return a-b
+        })
+        .reverse()
+        .forEach(elt=> alert(elt))
+*/
+
+      // console.log(obj)
+      //  alert(obj.nom)//Defaut
+      //alert(obj['prenom'])
+
+    /*  for (const key in obj) {
+           alert(obj[key])
+      }*/ 
+     //var str=parseObjetToJson()
+     //console.log(parseJsonToObject(str))
+      ///obj.direBonjour();
+      /*var pers=new Personne("Diop","Amadou")
+         Personne.prototype.age=25
+        alert(pers.age)*/ 
+
+    var pers=Personnes("Diop","Amadou")
+    alert(pers.nom)
+    
+    </script>
+      
+</body>
+</html>

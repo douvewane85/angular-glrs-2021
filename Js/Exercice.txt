@@ -1,0 +1,8 @@
+Exercice 
+  Saisir  une  serie de  nombre, les conteiner  dans  une chaine 
+  puis les triés dans l'ordre  croissant et  decroissant.
+  -Sortir le Plus grands des nombres
+  -le plus petit 
+  -la nbre d'occurence de la valeur la plus grande 
+  NB: 
+  Fonctions JS de chaine et de Tableau  
