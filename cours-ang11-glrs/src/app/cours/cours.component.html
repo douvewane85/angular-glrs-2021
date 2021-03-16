@@ -1,0 +1,83 @@
+<p>cours works!</p>
+<!--String interpollation-->
+<div>
+    {{title}}
+</div>
+<input  type="text" value="{{title}}"/>
+
+<!--Property Binding-->
+<div [textContent]="title">
+</div>
+<input  type="text" [value]="title"/>
+<!--event Binding-->
+<button (click)="onClikMe()">Dire Bonjour</button>
+
+
+
+<!--Two way Data Binding-->
+<div>
+    <input  type="text" [(ngModel)]="a"/>
+      <span *ngIf="a%2==0; else sinon">{{a}} est pair</span>
+      <ng-template #sinon>
+        {{a}} est impair
+      </ng-template>
+      
+</div>
+
+<ng-container [ngSwitch]="a">
+   <ng-template ngSwitchCase="1">
+        Janvier
+    </ng-template>
+    <ng-template ngSwitchCase="2">
+        Fevrier
+    </ng-template>
+    <ng-template ngSwitchDefault>
+        Autre Mois
+    </ng-template>
+ 
+</ng-container>
+
+<ul>
+    <li *ngFor="let i of numbers">{{i}}</li>
+</ul>
+
+<!--
+    Directives 
+      -Structurelle 
+         *ngIf 
+         *ngFor
+         [ngSwitch] 
+           *ngSwitchCase
+      -Template
+          ngTemplate
+          ngContainer
+
+    POO 
+      -interface 
+-->
+<div>{{prod.name}}</div>
+<div>{{prod.quantity}}</div>
+<div>{{prod.prix}}</div>
+<div>{{prod}}</div>
+<div>{{prod|json}}</div>
+
+<table>
+<thead>
+    <th>Name</th>
+    <th>Prix</th>
+    <th>Quantité</th>
+    
+</thead>
+<tbody>
+       <tr *ngFor="let p of produits ">
+        <td> {{p.name}}</td>
+        <td>{{p.prix}}</td>
+        <td>{{p.quantity}}</td>
+       </tr>
+</tbody>
+</table>
+
+
+
+
+
