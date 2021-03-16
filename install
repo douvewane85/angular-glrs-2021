@@ -1,0 +1,293 @@
+npm install --save json-server
+npm install --save concurrently
+package.json
+"start":"concurrently \"ng serve\" \"json-server --watch db.json\" "
+
+npm install --save bootstrap
+npm install --save jquery
+npm install --save font-awesome
+
+//Inclusion des Dépendances 
+  --angular.json 
+  
+             "styles": [
+              "src/styles.css",
+              "./node_modules/bootstrap/dist/css/bootstrap.min.css"
+            ],
+            "scripts": [
+              "./node_modules/jquery/dist/jquery.min.js",
+              "./node_modules/bootstrap/dist/js/bootstrap.min.js"
+            ]
+
+--style.css
+           @import "../node_modules/font-awesome/css/font-awesome.min.css";
+           ou 
+           @import "~font-awesome/css/font-awesome.min.css";
+
+1) Creer le Component 
+ --Barre de Navigation 
+   ng g c components/nav-bar
+ --Product Component
+    ng g c components/products
+ --Home Component
+   ng g c components/home
+2) Routing 
+  a) --app-routing.module.ts
+    const routes: Routes = [
+    {
+        "path":"products",component: ProductsComponent
+    },
+    {
+        "path":"",component: HomeComponent
+    }
+    ];
+ b)Ajouter les Liens  
+  -- nav-bar.component.html
+     <li class="nav-item active">
+          <a class="nav-link" routerLink="/">Home
+            <span class="sr-only">(current)</span>
+          </a>
+    </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/products">Produits</a>
+        </li>
+--3)Service 
+   a) --importer le Module Http => app.modules
+       import { HttpClientModule } from '@angular/common/http';
+       imports: [
+           HttpClientModule,
+       ]
+  b)Generer un service 
+      ng g s services/products
+        --getAllProducts():Observable<Product[]> 
+        -- getSelectedProducts():Observable<Product[]>
+        -- getAvailableProducts():Observable<Product[]>
+
+--4)Modele 
+    ng g i models/product
+
+
+   --Event Binding  dans le fichier 
+         --Menu interne products.component.html
+               <button (click)="onGetAllProducts()" class="btn btn-outline-info">All</button>
+                <button (click)="onGetSelectedProducts()" class="btn btn-outline-info">Selected</button>
+               <button (click)="onAvailableProducts()" class="btn btn-outline-info">Available</button>
+        
+  5) Affichage Liste des Produits 
+  --Methode 1: 
+     -- Injection du service dans le Component 
+        constructor(private productsService :ProductsService ) { }
+     -- products.component.ts
+       products:Product[]|null=null;
+       onGetAllProducts(){
+      this.productsService.getAllProducts().subscribe(
+        (data)=>{
+            this.products=data
+        },(err=>{
+           console.log(err)
+        })
+      )
+       }
+      -- products.component.html  
+        <tr class="table-light " *ngFor="let product of products">
+            <th scope="row">{{product.id}}</th>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.quantity}}</td>
+            <td>{{product.selected}}</td>
+            <td>{{product.available}}</td>
+          </tr>
+    --Methode 2:
+     -- products.component.ts
+        products$:Observable<Product[]>|null=null;
+        onGetAllProducts(){
+        this.products$=this.productsService.getAllProducts();
+        } 
+    -- products.component.html 
+     <tr class="table-light " *ngFor="let product of products$|async">
+            <th scope="row">{{product.id}}</th>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.quantity}}</td>
+            <td>{{product.selected}}</td>
+            <td>{{product.available}}</td>
+     </tr>
+
+     Methode 3 : Gestion des Etat 
+        --product.state.ts 
+        --products.component.ts 
+          products$:Observable<AppDataState<Product[]>>|null=null;
+      readonly DataStateEnum=DataStateEnum;
+      onGetAllProducts(){
+        
+        this.products$=this.productsService.getAllProducts().pipe(
+        map((data)=>({dataState:DataStateEnum.LOADED,data:data})),
+        startWith({dataState:DataStateEnum.LOADIND}),
+        catchError((err)=>of({dataState:DataStateEnum.ERROR,errorMessage:err.message}))
+      );
+     }
+
+      --products.component.html 
+           <ng-container  *ngIf="products$|async as result" [ngSwitch]="result.dataState">
+                <ng-container  *ngSwitchCase="DataStateEnum.LOADIND">
+                    Loading....{{result.dataState}}
+                </ng-container>
+                <ng-container  *ngSwitchCase="DataStateEnum.ERROR">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>{{result.errorMessage}}</strong>
+                    </div>
+                </ng-container>
+
+                <ng-container  *ngSwitchCase="DataStateEnum.LOADED"> 
+
+                </ng-container> 
+
+6) Formulaire 
+   --Form Template 
+     --importer le Module Http
+      imports: [
+      FormsModule
+    ]
+
+       --products.component.html 
+          <form #f="ngForm" (ngSubmit)="onSearch(f.value)" class="form-inline my-2 my-lg-0 ">
+              <input ngModel name="keyword" class="form-control mr-sm-2" type="text" placeholder="Search">
+              <button class="btn btn-outline-info my-2 my-sm-0" type="submit" >OK</button>
+          </form>
+       --products.component.ts 
+          onSearch(dataForm:any){
+              this.products$=this.getData(this.productsService.getSearchProducts(dataForm.keyword)) 
+            }
+       --products.service.ts
+            getSearchProducts(keyword:string):Observable<Product[]>{
+             return this.http.get<Product[]>(this.host+"/products?name_like="+keyword)
+            } 
+7) Actions sur la Table 
+  //product.component.ts
+    onSelect(product:Product){
+      this.productsService.updateProduct(product).subscribe(
+        (data)=>{
+          product.selected=data.selected
+        }
+      )
+   }
+  onDelete(id:number){
+       this.productsService.deleteProduct(id).subscribe((data)=>{
+         this.onGetAllProducts()
+       });
+  }
+
+  //product.service.ts 
+
+  updateProduct(product:Product):Observable<Product>{
+   product.selected= !product.selected
+   return this.http.put<Product>(this.host+"/products/"+product.id,product)
+  }
+
+  deleteProduct(id:number):Observable<void>{
+  return this.http.delete<void>(this.host+"/products/"+id)
+  }
+
+  product.component.html  
+                    <td>
+                        <button type="button" (click)="onSelect(product)" class="btn-sm "  [ngClass]="product.selected ?'btn-success':'btn-danger'">
+                            <span *ngIf="product.selected">UnSelect</span>
+                            <span *ngIf="!product.selected">Selected</span>
+                        </button>
+
+                        <button type="button" (click)="onDelete(product.id)" class="btn-sm btn-danger ml-1"  >
+                           <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    </td>
+
+//Sweet alert 
+   npm install --save sweetalert2
+   //style.css  
+    "styles": [
+ 
+      "node_modules/sweetalert2/src/sweetalert2.scss"
+ 
+    ],
+  //product.component.ts
+    onDelete(id:number){
+    this.confirmBox( this.productsService.deleteProduct(id)); 
+  }
+
+  private confirmBox(action:Observable<any>){
+    Swal.fire({
+      title: 'Are you sure want to remove?',
+      text: 'You will not be able to recover this file!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+        if (result.value) {
+         action.subscribe((data)=>{
+          this.onGetAllProducts()
+         })
+        Swal.fire(
+          'Deleted!',
+          'Your imaginary file has been deleted.',
+          'success'
+        )
+      } 
+    })
+  }
+
+  Communication entre Composant 
+  --Defition des ProductActionType
+     export enum ProductActionType{
+        "GET_ALL_PRODUCTS"="[Product] Get All Products",
+        "GET_SELECTED_PRODUCTS"="[Product] Get Selected Products",
+        "GET_AVAILABLE_PRODUCTS"="[Product] Get Available Products",
+        "SEARCH_PRODUCTS"="[Product] Search Products",
+        "NEW_PRODUCT"="[Product] New Products"
+    
+      }
+
+  --Defition de  ActionEvent
+
+    export interface ActionEvent{
+       type:ProductActionType,
+       payload?:any
+    }
+  Du Composant Fils vers Compasant Parent => EventEmetter 
+    --Creer un Companent product-nav-bar 
+          ng g c components/products/product-nav-bar
+    --Component Fils
+            --product-nav-bar.component.ts => 
+                --Definir l'evenement Emetter  
+                    @Output() productEventEmetter:EventEmitter<ActionEvent>=new EventEmitter();
+                -- Appel de l'emetter
+                    this.productEventEmetter.emit({
+                    type:ProductActionType.GET_ALL_PRODUCTS
+                    })
+    --Component Parent 
+       --product.component.html
+          --Appel du Component product-nav-bar
+                <app-product-nav-bar 
+                (productEventEmetter)="onActionEvent($event)" >
+                </app-product-nav-bar>
+          --product.component.ts => 
+             --Definir Ecouteur Evenement
+             onActionEvent($event:ActionEvent){
+                switch($event.type){
+                    case ProductActionType.GET_ALL_PRODUCTS:
+                    this.onGetAllProducts()
+                    break;
+                    case ProductActionType.GET_SELECTED_PRODUCTS:
+                    this.onGetSelectedProducts()
+                    break;
+                    case ProductActionType.GET_AVAILABLE_PRODUCTS:
+                    this.onAvailableProducts()
+                    break;
+                    case ProductActionType.SEARCH_PRODUCTS:
+                    this.onSearch($event.payload)
+                    break;
+                    case ProductActionType.NEW_PRODUCT:
+                    this.onShowFormNewProduct()
+                    break;
+                }
+
+ 
