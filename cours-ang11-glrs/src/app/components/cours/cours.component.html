@@ -61,11 +61,14 @@
 <div>{{prod}}</div>
 <div>{{prod|json}}</div>
 
+<div>{{produits|json}}</div>
+
 <table>
 <thead>
     <th>Name</th>
     <th>Prix</th>
     <th>Quantité</th>
+    <th>CreateAt</th>
     
 </thead>
 <tbody>
@@ -73,6 +76,7 @@
         <td> {{p.name}}</td>
         <td>{{p.prix}}</td>
         <td>{{p.quantity}}</td>
+        <td>{{p.createAt|date:'shortDate'}}</td>
        </tr>
 </tbody>
 </table>

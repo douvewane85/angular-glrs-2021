@@ -1,0 +1,47 @@
+{
+  "categorie": [
+    {
+      "id": 1,
+      "libelle": "Alimentaire"
+    },
+    {
+      "id": 2,
+      "libelle": "Cosmetique"
+    }
+  ],
+  "produits": [
+    {
+      "id": 1,
+      "name": "Lait",
+      "quantity": 1,
+      "prix": 34,
+      "categorieId": 1
+    },
+    {
+      "id": 2,
+      "name": "Cafe",
+      "quantity": 1,
+      "prix": 34,
+      "selected": true,
+      "categorieId": 1
+    },
+    {
+      "id": 3,
+      "name": "Miel",
+      "quantity": 1,
+      "prix": 34,
+      "selected": false,
+      "promo": true,
+      "categorieId": 2
+    },
+    {
+      "name": "Cafe1",
+      "quantity": 1,
+      "prix": 34,
+      "selected": true,
+      "id": 4,
+      "categorieId": 1
+    }
+  ]
+  
+}

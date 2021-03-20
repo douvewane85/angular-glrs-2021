@@ -1,0 +1,26 @@
+Structure 
+   app 
+      --core 
+          --services 
+          --pipes 
+          --models 
+          --guards
+       --component 
+           --cours
+             --cours-component.html
+             --cours-component.ts  
+            --produits(Lister,Filtrer,Tri,Creer,Editer,Supprimer)
+                --produits-component.html
+                --produits-component.ts 
+                      --add-produits-components
+           --nav-bar(menu)
+                --nav-bar-component.html
+                --nav-bar-component.ts 
+            --Categorie(Lister,Creer,Editer,Supprimer)
+                --categorie-component.html
+                --categorie-component.ts 
+                      --add-categorie-components
+      --app-routing 
+      --app-module
+      --app-component.html
+      --app-component.ts

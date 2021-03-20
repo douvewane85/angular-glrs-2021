@@ -1,4 +1,6 @@
+API RESTFULL Test
 npm install --save json-server
+
 npm install --save concurrently
 package.json
 "start":"concurrently \"ng serve\" \"json-server --watch db.json\" "
@@ -41,6 +43,13 @@ npm install --save font-awesome
         "path":"",component: HomeComponent
     }
     ];
+  c) --Child Route 
+      {
+        path:"produit","component":ProduitComponent,
+         children:[
+         {path:"new","component":NewProduitComponent},
+         { path: '', redirectTo: '/new', pathMatch: 'full' }
+      ]},
  b)Ajouter les Liens  
   -- nav-bar.component.html
      <li class="nav-item active">
@@ -59,9 +68,20 @@ npm install --save font-awesome
        ]
   b)Generer un service 
       ng g s services/products
-        --getAllProducts():Observable<Product[]> 
-        -- getSelectedProducts():Observable<Product[]>
-        -- getAvailableProducts():Observable<Product[]>
+        getAllProducts():Observable<Product[]>{
+            return this.http.get<Product[]>(this.host+"/products")
+        }
+
+      getSelectedProducts():Observable<Product[]>{
+        return this.http.get<Product[]>(this.host+"/products?selected=true")
+      }
+      getAvailableProducts():Observable<Product[]>{
+        return this.http.get<Product[]>(this.host+"/products?available=true")
+      }
+
+      getSearchProducts(keyword:string):Observable<Product[]>{
+        return this.http.get<Product[]>(this.host+"/products?name_like="+keyword)
+      }
 
 --4)Modele 
     ng g i models/product
@@ -88,119 +108,256 @@ npm install --save font-awesome
         })
       )
        }
-      -- products.component.html  
-        <tr class="table-light " *ngFor="let product of products">
-            <th scope="row">{{product.id}}</th>
-            <td>{{product.name}}</td>
-            <td>{{product.price}}</td>
-            <td>{{product.quantity}}</td>
-            <td>{{product.selected}}</td>
-            <td>{{product.available}}</td>
-          </tr>
-    --Methode 2:
-     -- products.component.ts
-        products$:Observable<Product[]>|null=null;
-        onGetAllProducts(){
-        this.products$=this.productsService.getAllProducts();
-        } 
-    -- products.component.html 
-     <tr class="table-light " *ngFor="let product of products$|async">
-            <th scope="row">{{product.id}}</th>
-            <td>{{product.name}}</td>
-            <td>{{product.price}}</td>
-            <td>{{product.quantity}}</td>
-            <td>{{product.selected}}</td>
-            <td>{{product.available}}</td>
-     </tr>
+      -- products.component.html
+              a) Lister
+                <tr class="table-light " *ngFor="let product of products">
+                    <th scope="row">{{product.id}}</th>
+                    <td>{{product.name}}</td>
+                    <td>{{product.price}}</td>
+                    <td>{{product.quantity}}</td>
+                    <td>{{product.selected}}</td>
+                    <td>{{product.available}}</td>
+                  </tr>
+                   b) Filtrer les Produits Selected et Par Promo
+             
+                ---c) Selectionner un Produit
+                        <button type="button" (click)="onSelect(product,ActionProduct.SELECTED)" class="btn-sm "  [ngClass]="product.selected ?'btn-success':'btn-danger'">
+                            <span *ngIf="product.selected">UnSelect</span>
+                            <span *ngIf="!product.selected">Selected</span>
+                        </button>
 
-     Methode 3 : Gestion des Etat 
-        --product.state.ts 
-        --products.component.ts 
-          products$:Observable<AppDataState<Product[]>>|null=null;
-      readonly DataStateEnum=DataStateEnum;
-      onGetAllProducts(){
-        
-        this.products$=this.productsService.getAllProducts().pipe(
-        map((data)=>({dataState:DataStateEnum.LOADED,data:data})),
-        startWith({dataState:DataStateEnum.LOADIND}),
-        catchError((err)=>of({dataState:DataStateEnum.ERROR,errorMessage:err.message}))
-      );
-     }
+                ---d) Mettre un Produit en Promo
+                      <button type="button" (click)="onSelect(product,ActionProduct.PROMO)" class="btn btn-sm ml-1 "  [ngClass]="product.promo ?'btn-warning':'btn-success'">
+                          <span *ngIf="product.promo">En Promo</span>
+                          <span *ngIf="!product.promo">Mettre en Promo</span>
+                       </button>
+                   --Dans le Service 
+                      updateProduct(product:Produit,action:ActionProduct=ActionProduct.ALL):Observable<Produit>{
+                          switch(action){
+                            case ActionProduct.SELECTED:
+                              product.selected= !product.selected
+                            break;
+                            case ActionProduct.PROMO:
+                              product.promo= !product.promo
+                            break;
+                          }
+                          return this.http.put<Produit>(this.host+"/produits/"+product.id,product)
 
-      --products.component.html 
-           <ng-container  *ngIf="products$|async as result" [ngSwitch]="result.dataState">
-                <ng-container  *ngSwitchCase="DataStateEnum.LOADIND">
-                    Loading....{{result.dataState}}
-                </ng-container>
-                <ng-container  *ngSwitchCase="DataStateEnum.ERROR">
-                    <div class="alert alert-danger" role="alert">
-                        <strong>{{result.errorMessage}}</strong>
-                    </div>
-                </ng-container>
+                        } 
+                  f) Rechercher Produit 
+                   Formulaire  => Template Driven Form => Event Binding
+                      --Form Template 
+                        --importer le Module Http
+                          imports: [
+                          FormsModule
+                        ]
+                          --products.component.html 
+                              <form #f="ngForm" (ngSubmit)="onSearch(f.value)" class="form-inline my-2 my-lg-0 ">
+                                  <input ngModel name="keyword" class="form-control mr-sm-2" type="text" placeholder="Search">
+                                  <button class="btn btn-outline-info my-2 my-sm-0" type="submit" >OK</button>
+                              </form>
+                          --products.component.ts 
+                              onSearch(dataForm:any){
+                                  this.products$=this.getData(this.productsService.getSearchProducts(dataForm.keyword)) 
+                                }
+                          --products.service.ts
+                                getSearchProducts(keyword:string):Observable<Product[]>{
+                                return this.http.get<Product[]>(this.host+"/products?name_like="+keyword)
+                                } 
 
-                <ng-container  *ngSwitchCase="DataStateEnum.LOADED"> 
+  6)Ajouter un Produit => Template Reactive Form
+         a) Ajout
+                  --importer le Module Http
+                          imports: [
+                          ReactiveFormsModule
+                        ] 
+                        *.component.html
+                          <form [formGroup]="productFormGroup" *ngIf="productFormGroup">
+                              
+                                <div class="form-group has-success">
+                                  <label class="form-control-label" for="inputValid">Name</label>
+                                  <input type="text" value="" 
+                                    class="form-control " 
+                                  name="name"   formControlName="name"
+                                  >
+                              </div>
+                               <div class="form-group pull-right">
+                                 <button type="button" (click)="onAddProduit()" [disabled]="productFormGroup.invalid" name="" id="" class="btn btn-primary " >Enregistrer</button>
+                               </div>
+                          </form>
+                       *.component.ts
 
-                </ng-container> 
+                       constructor(private fb:FormBuilder,private productService:ProductService) { }
+  
+                          productFormGroup?:FormGroup
+                          ngOnInit(): void {
+                            this.productFormGroup=this.fb.group({
+                              name:["",[Validators.required,Validators.minLength(5),Validators.maxLength(30)]],
+                              prix:[0,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                              quantity:[0,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                              selected:[true,[Validators.required]],
+                              promo:[true,[Validators.required]]
 
-6) Formulaire 
-   --Form Template 
-     --importer le Module Http
-      imports: [
-      FormsModule
-    ]
+                            } )
+                          }
+                          onAddProduit(){
+                                const produit:Produit=this.productFormGroup.value 
+                              this.productService.addProduct(produit).subscribe((data)=>{
+                              })
+                          }
+            b)Validation du Formulaire 
+                  *.component.html 
+                  <div class="form-group has-success">
+                      <label class="form-control-label" for="inputValid">Name</label>
+                      <input type="text" value="" 
+                    class="form-control " 
+                    formControlName="name"
+                    [ngClass]="{'is-invalid':submitted && productFormGroup.controls.name.errors}"
+                  >
+                  <div *ngIf="productFormGroup.controls.name.errors.required" class="invalid-feedback">Le Champ Name est Obligatoire</div>
+                *.component.ts 
+                   get fields() { return this.productFormGroup.controls; }
+                    onAddProduit(){
+                        this.submitted=true;
+                        if(this.productFormGroup.invalid) return ;
+                        const produit:Produit=this.productFormGroup.value 
+                          this.productService.addProduct(produit).subscribe((data)=>{
+                            })
+                          }
+     </div>  
+     7)Editer un Produit à partir d'un autre Component
+        1) Creer le component edit-product
+        2)produit.component.html 
+              <button type="button" (click)="onEditProduct(product)" class="btn-sm btn-danger ml-1"  >
+              <i class="fa fa-edit" aria-hidden="true"></i>
+             </button>  
+       3) produit.component.ts 
 
-       --products.component.html 
-          <form #f="ngForm" (ngSubmit)="onSearch(f.value)" class="form-inline my-2 my-lg-0 ">
-              <input ngModel name="keyword" class="form-control mr-sm-2" type="text" placeholder="Search">
-              <button class="btn btn-outline-info my-2 my-sm-0" type="submit" >OK</button>
-          </form>
-       --products.component.ts 
-          onSearch(dataForm:any){
-              this.products$=this.getData(this.productsService.getSearchProducts(dataForm.keyword)) 
+           onEditProduct(product:Produit){
+             this.router.navigateByUrl("/edit-product/"+product.id)
             }
-       --products.service.ts
-            getSearchProducts(keyword:string):Observable<Product[]>{
-             return this.http.get<Product[]>(this.host+"/products?name_like="+keyword)
-            } 
-7) Actions sur la Table 
-  //product.component.ts
-    onSelect(product:Product){
-      this.productsService.updateProduct(product).subscribe(
-        (data)=>{
-          product.selected=data.selected
-        }
-      )
-   }
+            
+       4) Router 
+         {path:"edit-product/:id","component":NewProduitComponent,},
+       5)new-produit.component.ts 
+             constructor(
+               private activatedRoute:ActivatedRoute,
+                private route:Router) { }
+               produitId: number;
+             ngOnInit()
+                this.produitId = this.activatedRoute.snapshot.params['id'];
+                this.productService.getProductById(this.produitId)
+                 .pipe(first())
+                 .subscribe(product => {
+                    this.productFormGroup=this.fb.group({
+                    id:[product.id],
+                    name:[product.name,],
+                    prix:[product.prix,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                    quantity:[product.quantity,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                    selected:[product.selected,[Validators.required]],
+                    promo:[product.promo,[Validators.required]]
+                } )
+            });
+
+            onUpdateProduit(){
+                this.submitted=true;
+               if(this.productFormGroup.invalid) return ;
+               this.upProduct();
+
+            }
+
+  
+          private upProduct(){
+            const produit:Produit=this.productFormGroup.value 
+              this.productService.updateProduct(produit).subscribe((data)=>{
+                this.route.navigateByUrl("/produit")
+            })
+          }
+  8)Editer un Produit à partir du Formulaire Ajout => Template Reactive Form 
+        
+         new-produit.component.ts 
+             constructor(
+               private activatedRoute:ActivatedRoute,
+                private route:Router) { }
+               produitId: number;
+               isAddMode: boolean;
+               loading = false;
+
+               ngOnInit(): void {
+                this.produitId = this.activatedRoute.snapshot.params['id'];
+                  this.isAddMode = !this.produitId;
+                  this.productFormGroup=this.fb.group({
+                  id:[""],
+                  name:["",[Validators.required,Validators.minLength(5),Validators.maxLength(30)]],
+                  prix:[0,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                  quantity:[0,[Validators.required,Validators.minLength(5),Validators.min(1)]],
+                  selected:[true,[Validators.required]],
+                  promo:[false,[Validators.required]]
+                } )
+                if (!this.isAddMode) {
+                  this.productService.getProductById(this.produitId)
+                      .pipe(first())
+                      .subscribe(field => this.productFormGroup.patchValue(field));
+                }
+              }
+
+              
+
+              onAddProduit(){
+                this.submitted=true;
+                if(this.productFormGroup.invalid) return ;
+                this.loading = true;
+                  if (this.isAddMode) {
+                      this.addProduct();
+                  } else {
+                      this.upProduct();
+                  }
+               }
+
+            private addProduct(){
+              const produit:Produit=this.productFormGroup.value 
+                this.productService.addProduct(produit).subscribe((data)=>{
+                  this.loading = false; 
+                  this.route.navigateByUrl("/produit")
+              })
+            }
+              private upProduct(){
+                const produit:Produit=this.productFormGroup.value 
+                  this.productService.updateProduct(produit).subscribe((data)=>{
+                    this.route.navigateByUrl("/produit")
+                })
+              }
+          new-produit.component.html 
+            
+            <legend *ngIf="isAddMode">Formulaire D'ajout de Produit</legend>
+            <legend *ngIf="!isAddMode">Formulaire De  Modification de Produit</legend>
+
+             <button type="button" [disabled]="loading" (click)="onAddProduit()"  name="" id="" class="btn btn-primary " >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+                <span *ngIf="isAddMode">Enregistrer</span>
+                <span *ngIf="!isAddMode">Modification</span>
+             </button>
+  9) Supprimer un Produit
+
+.service.ts
+  deleteProduct(id:number):Observable<void>{
+  return this.http.delete<void>(this.host+"/products/"+id)
+  }
+  .component.ts
   onDelete(id:number){
        this.productsService.deleteProduct(id).subscribe((data)=>{
          this.onGetAllProducts()
        });
   }
 
-  //product.service.ts 
 
-  updateProduct(product:Product):Observable<Product>{
-   product.selected= !product.selected
-   return this.http.put<Product>(this.host+"/products/"+product.id,product)
-  }
-
-  deleteProduct(id:number):Observable<void>{
-  return this.http.delete<void>(this.host+"/products/"+id)
-  }
-
-  product.component.html  
-                    <td>
-                        <button type="button" (click)="onSelect(product)" class="btn-sm "  [ngClass]="product.selected ?'btn-success':'btn-danger'">
-                            <span *ngIf="product.selected">UnSelect</span>
-                            <span *ngIf="!product.selected">Selected</span>
-                        </button>
-
-                        <button type="button" (click)="onDelete(product.id)" class="btn-sm btn-danger ml-1"  >
+.component.html
+  <button type="button" (click)="onDelete(product.id)" class="btn-sm btn-danger ml-1"  >
                            <i class="fa fa-trash" aria-hidden="true"></i>
-                        </button>
-                    </td>
+  </.button>
 
-//Sweet alert 
+  Message de Confirmation 
+  //Sweet alert 
    npm install --save sweetalert2
    //style.css  
     "styles": [
@@ -209,6 +366,7 @@ npm install --save font-awesome
  
     ],
   //product.component.ts
+  import Swal from 'sweetalert2';
     onDelete(id:number){
     this.confirmBox( this.productsService.deleteProduct(id)); 
   }
@@ -234,6 +392,75 @@ npm install --save font-awesome
       } 
     })
   }
+
+
+  10) Utliser les  Observables dans les Vues             
+    --Lister les Produits:
+      -- products.component.ts
+           products$:Observable<Product[]>|null=null;
+            onGetAllProducts(){
+             this.products$=this.productsService.getAllProducts();
+        } 
+    -- products.component.html 
+     <tr class="table-light " *ngFor="let product of products$|async">
+            <th scope="row">{{product.id}}</th>
+            <td>{{product.name}}</td>
+            <td>{{product.price}}</td>
+            <td>{{product.quantity}}</td>
+            <td>{{product.selected}}</td>
+            <td>{{product.available}}</td>
+     </tr>
+
+     Methode 3 : Lister les Produits avec la Gestion des Etat 
+        --product.state.ts
+             export enum DataStateEnum{
+                LOADED,
+                LOADIND,
+                  ERROR
+                }
+
+             export interface AppDataState<T>{
+             dataState:DataStateEnum,
+                data?:T,
+                errorMessage?:string
+               } 
+        --products.component.ts 
+          products$:Observable<AppDataState<Product[]>>|null=null;
+          readonly DataStateEnum=DataStateEnum;
+          onGetAllProducts(){
+        
+        this.products$=this.productsService.getAllProducts().pipe(
+        map((data)=>({dataState:DataStateEnum.LOADED,data:data})),
+        startWith({dataState:DataStateEnum.LOADIND}),
+        catchError((err)=>of({dataState:DataStateEnum.ERROR,errorMessage:err.message}))
+      );
+     }
+
+      --products.component.html 
+           <ng-container  *ngIf="products$|async as result" [ngSwitch]="result.dataState">
+                <ng-container  *ngSwitchCase="DataStateEnum.LOADIND">
+                    Loading....{{result.dataState}}
+                </ng-container>
+                <ng-container  *ngSwitchCase="DataStateEnum.ERROR">
+                    <div class="alert alert-danger" role="alert">
+                        <strong>{{result.errorMessage}}</strong>
+                    </div>
+                </ng-container>
+
+                <ng-container  *ngSwitchCase="DataStateEnum.LOADED"> 
+
+                </ng-container> 
+
+
+
+
+
+
+
+
+
+
+
 
   Communication entre Composant 
   --Defition des ProductActionType
@@ -289,5 +516,24 @@ npm install --save font-awesome
                     this.onShowFormNewProduct()
                     break;
                 }
+
+--Formulaire Ajout de Produit
+
+Pipe Product 
+    transform(value: Produit[], field: string|number):Produit[]{
+    if (!Array.isArray(value)) {
+      return;
+    }
+    value.sort((a: Produit, b: Produit) => {
+      if (a[field] < b[field]) {
+        return -1;
+      } else if (a[field] > b[field]) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+    return value;
+  }
 
  

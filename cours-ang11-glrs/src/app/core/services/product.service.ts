@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { Produit } from '../models/produit';
@@ -7,14 +8,15 @@ import { Produit } from '../models/produit';
 })
 export class ProductService {
 
-  constructor() { }
+  constructor(private http:HttpClient) { }
 
  getProducts():Observable<Produit[]>{
     return of([
       {
         name:"Lait",
         quantity:1,
-        prix:34
+        prix:34,
+        createAt:new Date()
       },
       {
         name:"Cafe",
@@ -30,5 +32,9 @@ export class ProductService {
         promo:true
       },
     ])
+  }
+
+  getProductsWithApi():Observable<Produit[]>{
+    return this.http.get<Produit[]>("http://localhost:3000/produits");
   }
 }
