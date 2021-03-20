@@ -15,6 +15,8 @@
       "name": "Lait",
       "quantity": 1,
       "prix": 34,
+      "selected": false,
+      "promo": true,
       "categorieId": 1
     },
     {
@@ -22,26 +24,42 @@
       "name": "Cafe",
       "quantity": 1,
       "prix": 34,
-      "selected": true,
+      "selected": false,
+      "promo": false,
       "categorieId": 1
     },
     {
-      "id": 3,
       "name": "Miel",
       "quantity": 1,
       "prix": 34,
-      "selected": false,
+      "selected": true,
       "promo": true,
-      "categorieId": 2
+      "categorieId": 2,
+      "id": 3
     },
     {
       "name": "Cafe1",
       "quantity": 1,
       "prix": 34,
-      "selected": true,
+      "selected": false,
+      "promo": false,
       "id": 4,
       "categorieId": 1
+    },
+    {
+      "name": "Miel",
+      "quantity": 1,
+      "prix": 34,
+      "selected": true,
+      "promo": false,
+      "id": 5
+    },
+    {
+      "name": "gggggg",
+      "prix": 40,
+      "quantity": 60,
+      "selected": "false",
+      "id": 6
     }
   ]
-  
 }

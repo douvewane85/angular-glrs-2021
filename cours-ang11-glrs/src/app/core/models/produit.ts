@@ -7,3 +7,9 @@ export interface Produit {
     promo?:boolean,
     createAt?:Date
 }
+
+export enum ActionProduit{
+    ALL,
+    SELECTED,
+    PROMO
+}

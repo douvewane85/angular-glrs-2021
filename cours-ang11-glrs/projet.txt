@@ -12,14 +12,16 @@ Structure
             --produits(Lister,Filtrer,Tri,Creer,Editer,Supprimer)
                 --produits-component.html
                 --produits-component.ts 
-                      --add-produits-components
+                --add-produits-components
+                --edit-produits-components
            --nav-bar(menu)
                 --nav-bar-component.html
                 --nav-bar-component.ts 
             --Categorie(Lister,Creer,Editer,Supprimer)
                 --categorie-component.html
                 --categorie-component.ts 
-                      --add-categorie-components
+                --add-categorie-components
+                --edit-categorie-components
       --app-routing 
       --app-module
       --app-component.html
