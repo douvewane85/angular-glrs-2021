@@ -13,6 +13,9 @@ import { CategoriesComponent } from './components/categories/categories.componen
 import { CommandeComponent } from './components/commande/commande.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 import { EditProduitComponent } from './components/edit-produit/edit-produit.component';
+import { NavBarProduitComponent } from './components/produits/nav-bar-produit/nav-bar-produit.component';
+import { ListProduitsComponent } from './components/produits/list-produits/list-produits.component';
+import { ItemProduitComponent } from './components/produits/list-produits/item-produit/item-produit.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,10 @@ import { EditProduitComponent } from './components/edit-produit/edit-produit.com
     CategoriesComponent,
     CommandeComponent,
     PageNotFoundComponent,
-    EditProduitComponent
+    EditProduitComponent,
+    NavBarProduitComponent,
+    ListProduitsComponent,
+    ItemProduitComponent
   ],
   imports: [
     BrowserModule,

@@ -2,14 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
 import { ActionProduit, Produit } from '../../core/models/produit';
 import { Router } from '@angular/router';
-
+import { Observable, of } from 'rxjs';
+import { AppDataState, DataStateEnum } from 'src/app/core/state/product.state';
+import {catchError, map, startWith} from 'rxjs/operators';
 @Component({
   selector: 'app-produits',
   templateUrl: './produits.component.html',
   styleUrls: ['./produits.component.css']
 })
 export class ProduitsComponent implements OnInit {
-  produits:Produit[]|null=null;
+
+  //Observable
+  produits$?:Observable<AppDataState<Produit[]>>=null;
+  readonly DataStateEnum=DataStateEnum
+
   readonly ActionProduit=ActionProduit;
   constructor(private productService:ProductService,
              private router:Router) { }
@@ -19,26 +25,20 @@ export class ProduitsComponent implements OnInit {
   }
 
   onGetAllProduct(){
-    this.productService.getAllProduits().subscribe(
-      (data)=> this.produits=data
-    )
+    
+    this.produits$=this.transformDataToAppDataState(this.productService.getAllProduits())
+      
   }
   onGetSelectedProduct(){
-    this.productService.getSelectedProduits().subscribe(
-      (data)=> this.produits=data
-    )
+    this.produits$=this.transformDataToAppDataState(this.productService.getSelectedProduits())
   }
   onGetPromoProduct(){
-    this.productService.getPromoProduits().subscribe(
-      (data)=> this.produits=data
-    )
+    this.produits$=this.transformDataToAppDataState(this.productService.getPromoProduits())
   }
 
   onSearchProducts(dataForm:any){
     
-    this.productService.getProduitsLikeName(dataForm.keyword).subscribe(
-      (data)=> this.produits=data
-    )
+    this.produits$=this.transformDataToAppDataState(this.productService.getProduitsLikeName(dataForm.keyword))
   }
 
   onSelectProduct(produit:Produit,action:ActionProduit){
@@ -64,4 +64,12 @@ export class ProduitsComponent implements OnInit {
       
   }
 
+
+  private transformDataToAppDataState(produits:Observable<Produit[]>):Observable<AppDataState<Produit[]>>{
+    return produits.pipe(
+        map((produits:Produit[])=>({dataState:DataStateEnum.LOADED,data:produits}) ),
+      startWith({dataState:DataStateEnum.LOADING}),
+      catchError((error)=>of({dataState:DataStateEnum.ERROR,errorMessage:error.Message}))
+    );
+  }
 }

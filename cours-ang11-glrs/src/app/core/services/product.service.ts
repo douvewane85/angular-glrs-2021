@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { interval, Observable, of } from 'rxjs';
+import { delay, map, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { ActionProduit, Produit } from '../models/produit';
 
@@ -40,7 +41,11 @@ export class ProductService {
   }
 
   getAllProduits():Observable<Produit[]>{
-    return this.http.get<Produit[]>(`${this.host}/produits`);
+      return this.http.get<Produit[]>(`${this.host}/produits`).pipe(
+        delay(10000),
+        map((data)=> data)
+      );
+    
   }
 
   getSelectedProduits():Observable<Produit[]>{

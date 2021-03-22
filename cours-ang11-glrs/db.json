@@ -80,8 +80,8 @@
       "name": "Miel",
       "quantity": 1,
       "prix": 34,
-      "selected": true,
-      "promo": false,
+      "selected": false,
+      "promo": true,
       "id": 13
     }
   ]
