@@ -54,6 +54,10 @@ export class ProductService {
     return this.http.get<Produit[]>(`${this.host}/produits?name_like=${keyword}`);
   }
 
+  getProduitById(id:number):Observable<Produit>{
+    return this.http.get<Produit>(`${this.host}/produits/${id}`);
+  }
+
   updateProduit(produit:Produit,action:ActionProduit=ActionProduit.ALL):Observable<Produit>{
     switch (action) {
       case ActionProduit.SELECTED:
@@ -70,4 +74,9 @@ export class ProductService {
   addProduit(produit:Produit):Observable<Produit>{
        return this.http.post<Produit>(`${this.host}/produits`,produit);
   }
+
+  deleteProduit(id:number):Observable<void>{
+    return this.http.delete<void>(`${this.host}/produits/${id}`);
+  }
+  
 }

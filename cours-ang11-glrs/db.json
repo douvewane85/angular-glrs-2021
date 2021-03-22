@@ -11,24 +11,6 @@
   ],
   "produits": [
     {
-      "id": 1,
-      "name": "Lait",
-      "quantity": 1,
-      "prix": 34,
-      "selected": false,
-      "promo": true,
-      "categorieId": 1
-    },
-    {
-      "id": 2,
-      "name": "Cafe",
-      "quantity": 1,
-      "prix": 34,
-      "selected": false,
-      "promo": false,
-      "categorieId": 1
-    },
-    {
       "name": "Miel",
       "quantity": 1,
       "prix": 34,
@@ -55,11 +37,52 @@
       "id": 5
     },
     {
-      "name": "gggggg",
-      "prix": 40,
-      "quantity": 60,
-      "selected": "false",
-      "id": 6
+      "name": "Produit5",
+      "prix": 5600,
+      "quantity": 50,
+      "selected": true,
+      "promo": false,
+      "id": 8
+    },
+    {
+      "name": "Produit6",
+      "prix": 450,
+      "quantity": 56,
+      "selected": true,
+      "promo": true,
+      "id": 9
+    },
+    {
+      "id": 10,
+      "name": "Produit67",
+      "prix": 12,
+      "quantity": 15,
+      "selected": true,
+      "promo": true
+    },
+    {
+      "name": "Produit6",
+      "prix": 0,
+      "quantity": 0,
+      "selected": true,
+      "promo": false,
+      "id": 11
+    },
+    {
+      "name": "Produit6",
+      "prix": 4,
+      "quantity": 56,
+      "selected": true,
+      "promo": false,
+      "id": 12
+    },
+    {
+      "name": "Miel",
+      "quantity": 1,
+      "prix": 34,
+      "selected": true,
+      "promo": false,
+      "id": 13
     }
   ]
 }

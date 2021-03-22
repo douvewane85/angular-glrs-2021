@@ -238,10 +238,10 @@ npm install --save font-awesome
             }
             
        4) Router 
-         {path:"edit-product/:id","component":NewProduitComponent,},
+         {path:"edit-product/:id","component":EditProduitComponent,},
        5)new-produit.component.ts 
              constructor(
-               private activatedRoute:ActivatedRoute,
+                private activatedRoute:ActivatedRoute,
                 private route:Router) { }
                produitId: number;
              ngOnInit()
@@ -450,8 +450,6 @@ npm install --save font-awesome
                 <ng-container  *ngSwitchCase="DataStateEnum.LOADED"> 
 
                 </ng-container> 
-
-
 
 
 

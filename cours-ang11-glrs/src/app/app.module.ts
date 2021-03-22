@@ -12,6 +12,7 @@ import { AddProduitComponent } from './components/add-produit/add-produit.compon
 import { CategoriesComponent } from './components/categories/categories.component';
 import { CommandeComponent } from './components/commande/commande.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { EditProduitComponent } from './components/edit-produit/edit-produit.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
     AddProduitComponent,
     CategoriesComponent,
     CommandeComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    EditProduitComponent
   ],
   imports: [
     BrowserModule,

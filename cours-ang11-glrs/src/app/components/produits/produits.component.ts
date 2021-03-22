@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../core/services/product.service';
 import { ActionProduit, Produit } from '../../core/models/produit';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-produits',
@@ -10,7 +11,8 @@ import { ActionProduit, Produit } from '../../core/models/produit';
 export class ProduitsComponent implements OnInit {
   produits:Produit[]|null=null;
   readonly ActionProduit=ActionProduit;
-  constructor(private productService:ProductService) { }
+  constructor(private productService:ProductService,
+             private router:Router) { }
 
   ngOnInit(): void {
       this.onGetAllProduct()
@@ -47,6 +49,19 @@ export class ProduitsComponent implements OnInit {
 
   }
 
-
+  onEditProduit(produit:Produit){
+     this.router.navigateByUrl(`/edit-produit/${produit.id}`)
+  }
+  onDeleteProduit(produit:Produit){
+    if(confirm("Veullez confirmer la suppression")){
+      this.productService.deleteProduit(produit.id).subscribe(
+        ()=>{
+          alert("Poduit Supprimé")
+            this.onGetAllProduct()
+        }
+      )
+    }
+      
+  }
 
 }

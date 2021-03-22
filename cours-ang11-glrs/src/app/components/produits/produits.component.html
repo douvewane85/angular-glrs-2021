@@ -59,11 +59,11 @@
                     <span *ngIf="produit.promo" >En Promo</span>
                     <span *ngIf="!produit.promo">Pas Promo</span>
                 </button>
-                <button class="btn btn-warning  mr-2" >
-                  <i class="fa fa-edit    "></i>
+                <button class="btn btn-warning  mr-2" (click)="onEditProduit(produit)">
+                  <i class="fa fa-edit    ">  </i>
                 </button>
-                <button class="btn btn-danger mr-2" >
-                    <i class="fa fa-trash    "></i>
+                  <button class="btn btn-danger mr-2" >
+                    <i class="fa fa-trash    " (click)="onDeleteProduit(produit)"></i>
                   </button>
             </td>
         </tr>

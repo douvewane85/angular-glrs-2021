@@ -22,20 +22,20 @@ export class AddProduitComponent implements OnInit {
 
       this.produitFormGroupe=this.fb.group({
        name:["",[Validators.required,Validators.maxLength(50),Validators.minLength(5)]],
-       prix:[0,Validators.required],
+       prix:[0,[Validators.required,Validators.min(1)]],
        quantity:[0,Validators.required],
        selected:[true,Validators.required],
-       promo:[true,Validators.required]
+       promo:[false,Validators.required]
       })
   }
 
+get controls(){
+    return this.produitFormGroupe.controls;
+}
+
   onAddProduit(){
-  
-    this.submitted=true
-     /*if(this.produitFormGroupe.invalid){
-          return
-     }*/
-     alert("xxx")
+   this.submitted=true;
+     if(this.produitFormGroupe.invalid) return
      const prod:Produit=this.produitFormGroupe.value
      this.produitService.addProduit(prod).subscribe(
        (data)=>{
