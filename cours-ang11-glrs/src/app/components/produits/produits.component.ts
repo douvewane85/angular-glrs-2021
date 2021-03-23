@@ -3,7 +3,7 @@ import { ProductService } from '../../core/services/product.service';
 import { ActionProduit, Produit } from '../../core/models/produit';
 import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { AppDataState, DataStateEnum } from 'src/app/core/state/product.state';
+import { AppDataState, DataStateEnum, ActionEvent, ProduitActionTypeEnum } from 'src/app/core/state/product.state';
 import {catchError, map, startWith} from 'rxjs/operators';
 @Component({
   selector: 'app-produits',
@@ -14,9 +14,7 @@ export class ProduitsComponent implements OnInit {
 
   //Observable
   produits$?:Observable<AppDataState<Produit[]>>=null;
-  readonly DataStateEnum=DataStateEnum
-
-  readonly ActionProduit=ActionProduit;
+ 
   constructor(private productService:ProductService,
              private router:Router) { }
 
@@ -25,7 +23,6 @@ export class ProduitsComponent implements OnInit {
   }
 
   onGetAllProduct(){
-    
     this.produits$=this.transformDataToAppDataState(this.productService.getAllProduits())
       
   }
@@ -49,6 +46,7 @@ export class ProduitsComponent implements OnInit {
 
   }
 
+
   onEditProduit(produit:Produit){
      this.router.navigateByUrl(`/edit-produit/${produit.id}`)
   }
@@ -71,5 +69,34 @@ export class ProduitsComponent implements OnInit {
       startWith({dataState:DataStateEnum.LOADING}),
       catchError((error)=>of({dataState:DataStateEnum.ERROR,errorMessage:error.Message}))
     );
+  }
+
+  OnActionEvent(event:ActionEvent){
+      switch (event.type) {
+        case ProduitActionTypeEnum.ALL_PRODUCT:
+       
+          this.onGetAllProduct()
+          break; 
+          case ProduitActionTypeEnum.SELECTED_PRODUCT:
+          this.onGetSelectedProduct()
+          break;
+          case ProduitActionTypeEnum.PROMO_PRODUCT:
+          this.onGetPromoProduct()
+          break;
+          case ProduitActionTypeEnum.SEARCH_PRODUCT:
+          this.onSearchProducts(event.payload)
+          break;
+          case ProduitActionTypeEnum.SELECT_PRODUCT:
+          this.onSelectProduct(event.payload['data'],event.payload['action'])
+          break;
+          case ProduitActionTypeEnum.EDIT_PRODUCT:
+          this.onEditProduit(event.payload)
+          break;
+          case ProduitActionTypeEnum.DELETE_PRODUCT:
+            this.onDeleteProduit(event.payload)
+            break;
+        default:
+          break;
+      }
   }
 }

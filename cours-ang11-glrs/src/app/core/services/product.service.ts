@@ -42,7 +42,7 @@ export class ProductService {
 
   getAllProduits():Observable<Produit[]>{
       return this.http.get<Produit[]>(`${this.host}/produits`).pipe(
-        delay(10000),
+       // delay(10000),
         map((data)=> data)
       );
     

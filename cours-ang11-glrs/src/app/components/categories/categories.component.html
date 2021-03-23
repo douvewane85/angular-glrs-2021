@@ -1,1 +1,30 @@
-<p>categories works!</p>
+<ng-container *ngIf="categories$|async as result" [ngSwitch]="result.dataState">
+    <ng-container *ngSwitchCase="DataStateEnum.LOADING">
+         Loading.......
+    </ng-container>
+    <ng-container *ngSwitchCase="DataStateEnum.ERROR">
+        {{result.errorMessage}}
+    </ng-container>
+    <ng-container *ngSwitchCase="DataStateEnum.LOADED">
+        <div class="container">
+            <table class="table" >
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Libelle</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let cat of result.data">
+                        
+                        <td>{{cat.id}}</td>
+                        <td>{{cat.libelle}}</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
+        </div>
+    </ng-container>
+</ng-container>
+

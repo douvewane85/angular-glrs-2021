@@ -533,5 +533,29 @@ Pipe Product
     });
     return value;
   }
+//Comunication avec les Components avec Store centralisé
+ 1) Creer le Service 
+    export class EventDrivenService {
+    constructor() { }
+       sourceEventSubject:Subject<ActionEvent>=new Subject();
+       sourceEventSubjectObservable=this.sourceEventSubject.asObservable();
 
+  publishEvent(event:ActionEvent){
+     this.sourceEventSubject.next(event)
+  }
+
+  2) produit.componenent.ts
+  ngOnInit(): void {
+    this.eventDrivenService.sourceEventSubjectObservable.subscribe(
+      (actionEvent:ActionEvent)=>{
+           this.onActionEvent(actionEvent)
+      }
+    )
+
+  3) nav-produit.componenent.ts
+ onGetAllProducts(){
+    this.eventDrivenService.publishEvent({
+      type:ProductActionType.GET_ALL_PRODUCTS
+    })
+  }
  

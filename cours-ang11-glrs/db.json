@@ -11,20 +11,11 @@
   ],
   "produits": [
     {
-      "name": "Miel",
-      "quantity": 1,
-      "prix": 34,
-      "selected": true,
-      "promo": true,
-      "categorieId": 2,
-      "id": 3
-    },
-    {
       "name": "Cafe1",
       "quantity": 1,
       "prix": 34,
       "selected": false,
-      "promo": false,
+      "promo": true,
       "id": 4,
       "categorieId": 1
     },
@@ -32,16 +23,16 @@
       "name": "Miel",
       "quantity": 1,
       "prix": 34,
-      "selected": true,
-      "promo": false,
+      "selected": false,
+      "promo": true,
       "id": 5
     },
     {
       "name": "Produit5",
       "prix": 5600,
       "quantity": 50,
-      "selected": true,
-      "promo": false,
+      "selected": false,
+      "promo": true,
       "id": 8
     },
     {
@@ -49,7 +40,7 @@
       "prix": 450,
       "quantity": 56,
       "selected": true,
-      "promo": true,
+      "promo": false,
       "id": 9
     },
     {
@@ -58,7 +49,7 @@
       "prix": 12,
       "quantity": 15,
       "selected": true,
-      "promo": true
+      "promo": false
     },
     {
       "name": "Produit6",
